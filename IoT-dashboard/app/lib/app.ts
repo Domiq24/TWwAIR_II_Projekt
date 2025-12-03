@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import mongoose from "mongoose";
 import http from "http";
 import { Server, Socket } from "socket.io";
+import {IParkingSpace} from "./modules/models/parking.model";
 
 
 class App {
@@ -19,7 +20,7 @@ class App {
         this.initializeSocket();
         this.initializeMiddlewares();
         this.initializeControllers(controllers);
-        //this.connectToDatabase();
+        this.connectToDatabase();
     }
 
     private initializeControllers(controllers: Controller[]): void {
@@ -87,6 +88,10 @@ class App {
 
         this.io.on("connection", (socket: Socket) => {
             console.log(`Nowe połączenie: ${socket.id}`);
+
+            socket.on('updateSpace', (data: IParkingSpace) => {
+                console.log(`Aktualizacja stanu miejsca ${data.name}`);
+            });
 
             socket.on("message", (data: string) => {
                 console.log(`Wiadomość od ${socket.id}: ${data}`);

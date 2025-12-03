@@ -12,16 +12,22 @@
   "description": "",
   "dependencies": {
     "@types/socket.io": "^3.0.2",
+    "bcrypt": "^6.0.0",
     "body-parser": "1.20.3",
+    "cors": "^2.8.5",
     "express": "5.1.0",
+    "joi": "17.12.2",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.2.1",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^14.18.33",
     "nodemon": "^3.1.0",
     "ts-node": "10.9.1",
-    "typescript": "4.9.3"
+    "typescript": "5.9.3"
   }
 }
