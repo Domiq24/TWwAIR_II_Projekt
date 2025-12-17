@@ -93,11 +93,6 @@ class App {
                 console.log(`Aktualizacja stanu miejsca ${data.name}`);
             });
 
-            socket.on("message", (data: string) => {
-                console.log(`Wiadomość od ${socket.id}: ${data}`);
-                this.io.emit("message", data);
-            });
-
             socket.on("disconnect", () => {
                 console.log(`Rozłączono: ${socket.id}`);
             });

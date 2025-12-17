@@ -29,7 +29,7 @@ export default class ParkingService {
 
     public async get(name: string) {
         try {
-            return await ParkingModel.findOne({name: name});
+            return await ParkingModel.find({name: name});
         } catch (error) {
             console.error(`Wystąpił błąd podczas pobierania danych miejsca ${name}:`, error);
             throw new Error(`Wystąpił błąd podczas pobierania danych miejsca ${name}`);

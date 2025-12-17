@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import  TokenModel  from '../schemas/token.schema';
 import { config } from '../../config';
+import {Types} from "mongoose";
 
 class TokenService {
     public async create(user: any) {
@@ -9,7 +10,7 @@ class TokenService {
             userId: user.id,
             name: user.email,
             role: user.role,
-            isAdmin: user.isAdmin,
+            isActive: user.isActive,
             access: access
         };
 
@@ -44,7 +45,7 @@ class TokenService {
         try {
             const result = await TokenModel.deleteOne({ userId: userId });
 
-            if (result.deletedCount === 0) {
+            if (!result.acknowledged) {
                 throw new Error('Wystąpił błąd podczas usuwania danych');
             }
             return result;

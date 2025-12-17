@@ -5,6 +5,13 @@ import Joi from "joi";
 import { IParkingSpace } from '../modules/models/parking.model';
 import ParkingService from '../modules/services/parking.services';
 import { spaceName } from '../middlewares/spcaceName.middleware';
+import { service } from '../middlewares/service.middleware';
+import { auth } from '../middlewares/auth.middleware';
+import cors from 'cors';
+
+const options = {
+    origin: ['http://localhost:3100', 'http://localhost:5173']
+}
 
 class ParkingController implements Controller {
     public path = '/parking';
@@ -17,10 +24,11 @@ class ParkingController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.get(this.path, this.getAllSpaces);
-        this.router.post(`${this.path}/:name`, spaceName, this.updateSpace);
+        this.router.use(cors<Request>(options));
+        this.router.get(this.path, auth, this.getAllSpaces);
+        this.router.post(`${this.path}/:name`, service, spaceName, this.updateSpace);
         this.router.post(`${this.path}/add/:name`, spaceName, this.addOrUpdateSpace);
-        this.router.delete(`${this.path}/:name`, spaceName, this.deleteSpace);
+        this.router.delete(`${this.path}/:name`, service, spaceName, this.deleteSpace);
     }
 
     private getAllSpaces = async (request: Request, response: Response) => {
@@ -34,15 +42,16 @@ class ParkingController implements Controller {
         const schema = Joi.object({
             air: Joi.object({
                 name: Joi.string().regex(/[A-Z]\d{1,2}/).required(),
-                state: Joi.string().valid('free', 'occupied', 'emergency').required()
+                state: Joi.string().valid('free', 'occupied', 'emergency').default('free')
             }).required()
         });
 
         try {
-            const validatedData = await schema.validateAsync({air, name: name});
+            const validatedData = await schema.validateAsync({air});
+            if (validatedData.air.name != name) { throw new Error('\"name\" properties don\'t match in url and body')}
             const data: IParkingSpace = {
-                name: validatedData.name,
-                state: validatedData.state
+                name: validatedData.air.name,
+                state: validatedData.air.state
             }
 
             if(!await this.parkingService.get(data.name))

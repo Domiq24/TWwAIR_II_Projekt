@@ -3,6 +3,7 @@ import {Request, Response, NextFunction, Router} from 'express';
 import UserService from "../modules/services/user.services";
 import PasswordService from "../modules/services/password.services";
 import TokenService from "../modules/services/token.services";
+import { auth } from "../middlewares/auth.middleware";
 import cors from "cors";
 import {Server} from "socket.io";
 
@@ -27,7 +28,7 @@ class UserController implements Controller {
         this.router.post(`${this.path}/change_password`, this.changePassword);
         this.router.post(`${this.path}/auth`, this.authenticate);
         this.router.delete(`${this.path}/:id`, this.deleteUser);
-        this.router.delete(`${this.path}/logout/:id`, this.removeHashSession);
+        this.router.delete(`${this.path}/logout/:id`, auth, this.removeHashSession);
     }
 
     private getAllUsers = async (request: Request, response: Response, next: NextFunction) => {
