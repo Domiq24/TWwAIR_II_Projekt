@@ -1,7 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { config } from '../config';
-import { IUser } from "../modules/models/user.model";
+
+interface User{
+    userId: string;
+    name: string;
+    role: string;
+    isActive: boolean;
+}
 
 export const service = (request: Request, response: Response, next: NextFunction) => {
     let token = request.headers['x-access-token'] || request.headers['authorization'];
@@ -14,7 +20,7 @@ export const service = (request: Request, response: Response, next: NextFunction
                 if (err) {
                     return response.status(400).send('Invalid token.');
                 }
-                const user: IUser = decoded as IUser;
+                const user: User = decoded as User;
                 console.log(user.role);
                 if (!(user.isActive && ['admin', 'service'].includes(user.role))) {
                     return response.status(403).send('Access denied.');

@@ -1,6 +1,6 @@
 import  UserModel  from '../schemas/user.schema';
 import { IUser } from "../models/user.model";
-import {NextFunction} from "express";
+import { ObjectId } from "mongodb";
 
 class UserServices {
     public async getAll() {
@@ -40,10 +40,11 @@ class UserServices {
 
     public async deleteById(id: string) {
         try {
-            const result = await UserModel.findOneAndDelete({ _id: id });
+            const result = await UserModel.deleteOne({ _id: id });
             if (result) { return true; }
         } catch (error) {
-
+            console.error('Wystąpił błąd podczas usówania danych:', error);
+            throw new Error('Wystąpił błąd podczas usówania danych');
         }
     }
 }

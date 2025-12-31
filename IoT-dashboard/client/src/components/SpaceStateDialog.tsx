@@ -6,7 +6,7 @@ function SpaceStateDialog({name, setName, state}: {name: string, setName: (name:
     const [newState, setNewState] = useState('')
 
     const handleChangeState = () => {
-        axios.post(`http://localhost:3000/parking/${name}`, {
+        axios.post(`http://localhost:3100/parking/${name}`, {
             air: {
                 name: name,
                 state: newState

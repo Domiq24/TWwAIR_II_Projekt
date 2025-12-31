@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 import { config } from '../config';
 
 interface User{
@@ -9,7 +9,8 @@ interface User{
     isActive: boolean;
 }
 
-export const admin = (request: Request, response: Response, next: NextFunction) => {
+export const userAction = (request: Request, response: Response, next: NextFunction) => {
+    const { id } = request.params;
     let token = request.headers['x-access-token'] || request.headers['authorization'];
     if (token && typeof token === 'string') {
         if (token.startsWith('Bearer ')) {
@@ -21,7 +22,8 @@ export const admin = (request: Request, response: Response, next: NextFunction) 
                     return response.status(400).send('Invalid token.');
                 }
                 const user: User = decoded as User;
-                if (!(user.isActive && user.role == 'admin')) {
+                console.log(user.userId);
+                if (!(user.isActive && (user.userId === id || user.role === 'admin'))) {
                     return response.status(403).send('Access denied.');
                 }
                 next();

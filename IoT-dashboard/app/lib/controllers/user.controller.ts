@@ -4,12 +4,10 @@ import UserService from "../modules/services/user.services";
 import PasswordService from "../modules/services/password.services";
 import TokenService from "../modules/services/token.services";
 import { auth } from "../middlewares/auth.middleware";
+import { admin } from "../middlewares/admin.middleware";
+import { userAction } from "../middlewares/userAction.middleware";
 import cors from "cors";
 import {Server} from "socket.io";
-
-const options = {
-    origin: ['http://localhost:3100', 'http://localhost:5173']
-}
 
 class UserController implements Controller {
     public path = '/user';
@@ -22,13 +20,14 @@ class UserController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.use(cors<Request>(options));
-        this.router.get(this.path, this.getAllUsers);
+        this.router.use(cors<Request>());
+        this.router.get(this.path, admin, this.getAllUsers);
         this.router.post(this.path, this.createNewOrUpdate);
-        this.router.post(`${this.path}/change_password`, this.changePassword);
+        this.router.post(`${this.path}/change-password/admin`, admin, this.changePasswordAdmin);
+        this.router.post(`${this.path}/change-password`, auth, this.changePassword);
         this.router.post(`${this.path}/auth`, this.authenticate);
-        this.router.delete(`${this.path}/:id`, this.deleteUser);
-        this.router.delete(`${this.path}/logout/:id`, auth, this.removeHashSession);
+        this.router.delete(`${this.path}/:id`, userAction, this.deleteUser);
+        this.router.delete(`${this.path}/logout/:id`, userAction, this.removeHashSession);
     }
 
     private getAllUsers = async (request: Request, response: Response, next: NextFunction) => {
@@ -53,6 +52,7 @@ class UserController implements Controller {
                 });
             }
             response.status(200).json(user);
+            this.io.emit('updateUser', user);
         } catch (error) {
             console.error(`Validation Error: ${error.message}`);
             response.status(400).json({error: 'Bad request', value: error.message});
@@ -61,17 +61,43 @@ class UserController implements Controller {
     };
 
     private changePassword = async (request: Request, response: Response, next: NextFunction) => {
-        const {name, password} = request.body;
+        const {name, oldPassword, newPassword} = request.body;
 
         try {
             const user = await this.userService.getByEmailOrName(name);
             if (!user) return response.status(401).json({error: 'Unauthorized'});
 
-            const hashedPassword = await this.passwordService.hashPassword(password);
+            const authToken = await this.passwordService.authorize(user._id, oldPassword);
+            if (!authToken) {
+                await this.tokenService.remove(user._id);
+                return response.status(401).json({error: 'Unauthorized'});
+            }
+
+            const hashedPassword = await this.passwordService.hashPassword(newPassword);
             await this.passwordService.createOrUpdate({
                 userId: user._id,
                 password: hashedPassword
             });
+            response.status(200).json("New password has been updated");
+        } catch (error) {
+            console.error(`Password Change Error: ${error.message}`);
+            response.status(400).json({error: 'Bad request', value: error.message});
+        }
+    }
+
+    private changePasswordAdmin = async (request: Request, response: Response, next: NextFunction) => {
+        const {name, newPassword} = request.body;
+
+        try {
+            const user = await this.userService.getByEmailOrName(name);
+            if (!user) return response.status(401).json({error: 'Unauthorized'});
+
+            const hashedPassword = await this.passwordService.hashPassword(newPassword);
+            await this.passwordService.createOrUpdate({
+                userId: user._id,
+                password: hashedPassword
+            });
+            response.status(200).json("New password has been updated");
         } catch (error) {
             console.error(`Password Change Error: ${error.message}`);
             response.status(400).json({error: 'Bad request', value: error.message});
@@ -83,7 +109,8 @@ class UserController implements Controller {
 
         try {
             const user = await this.userService.getByEmailOrName(name);
-            if (!user) return response.status(401).json({error: 'Unauthorized'});
+            if (!user) return response.status(404).json({error: 'User not found'});
+            if (!user.isActive) return response.status(401).json({error: 'User disabled'});
 
             const result = await this.passwordService.authorize(user.id, password);
             if(!result) return response.status(401).json({error: 'Unauthorized'});
@@ -102,6 +129,7 @@ class UserController implements Controller {
         try {
             await this.userService.deleteById(id);
             await this.passwordService.deleteByUserId(id);
+            await this.tokenService.remove(id);
             response.status(200).send(`User ${id} deleted`);
         } catch (error) {
             console.error(`User Deletion Error: ${error.message}`);
@@ -110,7 +138,7 @@ class UserController implements Controller {
     }
 
     private removeHashSession = async (request: Request, response: Response, next: NextFunction) => {
-        const {id} = request.params;
+        const { id } = request.params;
 
         try {
             const result = await this.tokenService.remove(id);

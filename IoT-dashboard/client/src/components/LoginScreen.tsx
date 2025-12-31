@@ -45,14 +45,15 @@ function LoginScreen() {
             return;
         }
 
-        console.log(account);
-
-        axios.post('http://localhost:3000/user/auth', {
+        axios.post('http://localhost:3100/user/auth', {
             name: account.login,
             password: account.password
         })
         .then((response) => handleChangeRoute(response.data.token))
-        .catch((error: Error) => console.log(error))
+        .catch((error) => {
+            console.log(error);
+            setErrors({password: error.response.data.error});
+        } )
     }
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {

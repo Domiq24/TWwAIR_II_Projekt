@@ -5,7 +5,8 @@ import bodyParser from 'body-parser';
 import mongoose from "mongoose";
 import http from "http";
 import { Server, Socket } from "socket.io";
-import {IParkingSpace} from "./modules/models/parking.model";
+import { IParkingSpace } from "./modules/models/parking.model";
+import { IUser } from "./modules/models/user.model";
 
 
 class App {
@@ -91,6 +92,10 @@ class App {
 
             socket.on('updateSpace', (data: IParkingSpace) => {
                 console.log(`Aktualizacja stanu miejsca ${data.name}`);
+            });
+
+            socket.on('updateUser', (data: IUser) => {
+                console.log(`Aktualizacja użytkownika ${data._id}`);
             });
 
             socket.on("disconnect", () => {

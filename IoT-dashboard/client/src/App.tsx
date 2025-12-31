@@ -5,6 +5,7 @@ import Dashboard from "./components/Dashboard.tsx";
 import LoginScreen from "./components/LoginScreen.tsx";
 import SignUpScreen from "./components/SignUpScreen.tsx";
 import Navbar from "./components/Navbar.tsx";
+import UsersScreen from "./components/UsersScreen.tsx";
 
 function App() {
     const token = localStorage.getItem('token');
@@ -17,6 +18,7 @@ function App() {
                 <Route path="/log-in" element={<LoginScreen />} />
                 <Route path="/sign-up" element={<SignUpScreen />} />
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/users" element={<UsersScreen />} />
             </Routes>
         </BrowserRouter>
     )

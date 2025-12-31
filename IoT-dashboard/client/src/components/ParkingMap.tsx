@@ -1,5 +1,6 @@
 import { Paper, TableContainer, Table, TableBody, TableRow, TableCell } from '@mui/material';
 import ParkingSpace from "./ParkingSpace.tsx";
+import ImportExportIcon from '@mui/icons-material/ImportExport';
 
 function ParkingMap({spaces, setName}: {spaces: {[name: string]: string}, setName: (name: string) => void}) {
     return (
@@ -19,7 +20,7 @@ function ParkingMap({spaces, setName}: {spaces: {[name: string]: string}, setNam
                             <ParkingSpace name="B06" spaceDir="top" spaceState={spaces["B06"]} setName={setName} />
                             <ParkingSpace name="B07" spaceDir="top" spaceState={spaces["B07"]} setName={setName} />
                             <ParkingSpace name="B08" spaceDir="top" spaceState={spaces["B08"]} setName={setName} />
-                            <TableCell sx={{borderBottom: 'none', color: 'white', backgroundColor: '#979797', padding: 0, textAlign: 'center'}}>Entrance</TableCell>
+                            <TableCell sx={{borderBottom: 'none', textAlign: 'center'}}><ImportExportIcon sx={{color: 'white', fontSize: '3rem'}} /></TableCell>
                             <TableCell sx={{borderBottom: 'none'}} />
                             <TableCell sx={{borderBottom: 'none'}} />
                         </TableRow>

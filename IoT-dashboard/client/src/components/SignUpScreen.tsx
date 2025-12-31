@@ -49,15 +49,16 @@ function SignUpScreen() {
             return;
         }
 
-        console.log(account);
-
-        axios.post('http://localhost:3000/user', {
+        axios.post('http://localhost:3100/user', {
             name: account.login,
             email: account.email,
             password: account.password
         })
-        .then(() => navigate('/'))
-        .catch((error: Error) => console.log(error))
+        .then(() => navigate('/log-in'))
+        .catch((error) => {
+            console.log(error)
+            setErrors({repeatPassword: error.response.data.error});
+        });
     }
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -78,7 +79,7 @@ function SignUpScreen() {
                     <TextField label='Repeat Password' value={account.repeatPassword} name='repeatPassword' error={Boolean(errors.repeatPassword)} type='password' helperText={errors.repeatPassword} onChange={handleChange} variant='standard' required fullWidth sx={{marginBottom: '20px'}} />
                 </Box>
                 <Box>
-                    <Button type='submit' variant="contained" size='large'>Sign in</Button>
+                    <Button type='submit' variant="contained" size='large'>Sign up</Button>
                 </Box>
             </form>
         </Paper>

@@ -7,6 +7,7 @@ import RememberDialog from "./RememberDialog.tsx";
 import {jwtDecode} from "jwt-decode";
 import SpaceStateDialog from "./SpaceStateDialog.tsx";
 import EmergenciesDialog from "./EmergenciesDialog.tsx";
+import axios from "axios";
 
 interface ParkingSpace {
     name: string,
@@ -24,16 +25,15 @@ function Dashboard() {
     const user = jwtDecode(localStorage.getItem("token"));
 
     useEffect(() => {
-        fetch("http://localhost:3000/parking", {
-            method: "GET",
+        axios.get("http://localhost:3100/parking", {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': ' application/json',
                 'x-access-token': localStorage.getItem('token')
             }
         })
-        .then((res) => res.json())
-        .then((data: ParkingSpace[]) => {
+        .then((res) => {
+            const data = res.data as ParkingSpace[];
             const dict: {[name: string]: string} = data.reduce((acc: {[name: string]: string}, item) => {
                 acc[item.name] = item.state;
                 return acc;

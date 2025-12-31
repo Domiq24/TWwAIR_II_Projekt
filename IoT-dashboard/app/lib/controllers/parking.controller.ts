@@ -9,10 +9,6 @@ import { service } from '../middlewares/service.middleware';
 import { auth } from '../middlewares/auth.middleware';
 import cors from 'cors';
 
-const options = {
-    origin: ['http://localhost:3100', 'http://localhost:5173']
-}
-
 class ParkingController implements Controller {
     public path = '/parking';
     public router = Router();
@@ -24,7 +20,7 @@ class ParkingController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.use(cors<Request>(options));
+        this.router.use(cors<Request>());
         this.router.get(this.path, auth, this.getAllSpaces);
         this.router.post(`${this.path}/:name`, service, spaceName, this.updateSpace);
         this.router.post(`${this.path}/add/:name`, spaceName, this.addOrUpdateSpace);

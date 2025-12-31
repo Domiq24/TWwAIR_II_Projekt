@@ -1,5 +1,6 @@
 import PasswordModel  from '../schemas/password.schema';
 import bcrypt from 'bcrypt';
+import { ObjectId } from "mongodb";
 
 class PasswordService {
     async createOrUpdate({ userId, password }: { userId: string; password: string }): Promise<void> {
@@ -32,7 +33,7 @@ class PasswordService {
 
     public async deleteByUserId(userId: string) {
         try {
-            await PasswordModel.findOneAndDelete({ userId: userId });
+            await PasswordModel.deleteOne({ userId: userId });
         } catch (error) {
             console.error(`User Delete Error: ${error.message}`);
             throw new Error('Failed to delete password');
