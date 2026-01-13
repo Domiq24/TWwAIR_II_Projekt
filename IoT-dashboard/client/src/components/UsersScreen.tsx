@@ -47,9 +47,7 @@ function UsersScreen() {
                 'x-access-token': `Bearer ${localStorage.getItem('token')}`
             }
         })
-        .then((res) => {
-            setUsers(res.data);
-        })
+        .then(res => setUsers(res.data))
         .catch(error => console.log(error));
     }, []);
 

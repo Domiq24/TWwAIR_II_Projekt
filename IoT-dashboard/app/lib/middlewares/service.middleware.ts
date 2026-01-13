@@ -21,7 +21,6 @@ export const service = (request: Request, response: Response, next: NextFunction
                     return response.status(400).send('Invalid token.');
                 }
                 const user: User = decoded as User;
-                console.log(user.role);
                 if (!(user.isActive && ['admin', 'service'].includes(user.role))) {
                     return response.status(403).send('Access denied.');
                 }

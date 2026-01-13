@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import http from "http";
 import { Server, Socket } from "socket.io";
 import { IParkingSpace } from "./modules/models/parking.model";
+import { IEvent } from "./modules/models/event.model";
 import { IUser } from "./modules/models/user.model";
 
 
@@ -93,6 +94,10 @@ class App {
             socket.on('updateSpace', (data: IParkingSpace) => {
                 console.log(`Aktualizacja stanu miejsca ${data.name}`);
             });
+
+            socket.on('newEvent', (data: IEvent) => {
+                console.log(`Nowe zdarzenie ${data.spaceName}: ${data.state}`);
+            })
 
             socket.on('updateUser', (data: IUser) => {
                 console.log(`Aktualizacja użytkownika ${data._id}`);

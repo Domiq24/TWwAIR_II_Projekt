@@ -100,6 +100,16 @@ function Navbar() {
                             >
                                 Dashboard
                             </Button>
+                            {user != null && user.role != 'user' && <Button
+                                variant='text'
+                                size='large'
+                                sx={{color: 'white'}}
+                                onClick={() => {
+                                    navigate('/statistics');
+                                }}
+                            >
+                                Statistics
+                            </Button>}
                             {user != null && user.role == 'admin' && <Button
                                 variant='text'
                                 size='large'

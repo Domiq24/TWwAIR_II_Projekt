@@ -1,20 +1,23 @@
 import Controller from '../interfaces/controller.interface';
-import {NextFunction, Request, Response, Router} from 'express';
+import { Request, Response, Router } from 'express';
 import { Server } from 'socket.io';
 import Joi from "joi";
 import { IParkingSpace } from '../modules/models/parking.model';
 import ParkingService from '../modules/services/parking.services';
+import EventService from "../modules/services/event.services";
 import { spaceName } from '../middlewares/spcaceName.middleware';
 import { service } from '../middlewares/service.middleware';
 import { auth } from '../middlewares/auth.middleware';
 import cors from 'cors';
+import {IEvent} from "../modules/models/event.model";
+
 
 class ParkingController implements Controller {
     public path = '/parking';
     public router = Router();
     public io: Server;
 
-    constructor(io: Server, private parkingService: ParkingService) {
+    constructor(io: Server, private parkingService: ParkingService, private eventService: EventService) {
         this.io = io;
         this.initializeRoutes();
     }
@@ -23,7 +26,7 @@ class ParkingController implements Controller {
         this.router.use(cors<Request>());
         this.router.get(this.path, auth, this.getAllSpaces);
         this.router.post(`${this.path}/:name`, service, spaceName, this.updateSpace);
-        this.router.post(`${this.path}/add/:name`, spaceName, this.addOrUpdateSpace);
+        this.router.post(`${this.path}/add/:name`, this.addOrUpdateSpace);
         this.router.delete(`${this.path}/:name`, service, spaceName, this.deleteSpace);
     }
 
@@ -56,8 +59,14 @@ class ParkingController implements Controller {
                 response.status(404).json({ error: `Space not found: ${data.name}` });
             }
 
-            await this.parkingService.update(data);
+            await this.parkingService.update(data)
             this.io.emit('updateSpace', data);
+
+            const event: IEvent = {
+                spaceName: data.name,
+                state: data.state
+            }
+            this.io.emit('newEvent', await this.eventService.createNewOrUpdate(event))
             response.status(200).json(data);
         } catch (error) {
             console.error(`Validation Error: ${error.message}`);
