@@ -7,7 +7,7 @@ import SignUpScreen from "./components/SignUpScreen.tsx";
 import Navbar from "./components/Navbar.tsx";
 import UsersScreen from "./components/UsersScreen.tsx";
 import StatScreen from "./components/StatScreen.tsx";
-
+import SuccessScreen from './components/SuccessScreen.tsx';
 function App() {
     const token = localStorage.getItem('token');
 
@@ -21,6 +21,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/users" element={<UsersScreen />} />
                 <Route path="/statistics" element={<StatScreen />} />
+                <Route path="/success" element={<SuccessScreen />} />
             </Routes>
         </BrowserRouter>
     )
