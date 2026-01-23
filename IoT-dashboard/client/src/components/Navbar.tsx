@@ -140,7 +140,7 @@ function Navbar() {
                             <MenuItem onClick={() => handleLogout()}>Log out</MenuItem>
                             <Divider />
                             <MenuItem onClick={() => setUserAction('changePassword')}>Change Password</MenuItem>
-                            <MenuItem sx={{color: 'red'}} onClick={() => setUserAction('deleteUser')}>Delete Account</MenuItem>
+                            {user.role == "user" && <MenuItem sx={{color: 'red'}} onClick={() => setUserAction('deleteUser')}>Delete Account</MenuItem>}
                         </Menu>
                     </div>}
                 </Toolbar>
