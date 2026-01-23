@@ -58,7 +58,7 @@ class ParkingController implements Controller {
 
         try {
             const session = await stripe.checkout.sessions.create({
-                payment_method_types: ['card'],
+                payment_method_types: ['card', 'blik'],
                 line_items: [{
                     price_data: {
                         currency: 'pln',
